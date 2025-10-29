@@ -1,0 +1,65 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use App\Models\Products;
+
+class CartItem extends Model
+{
+    use HasFactory;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'cart_id',
+        'product_id',
+        'quantity',
+        'price',
+        'options',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'price' => 'decimal:2',
+        'quantity' => 'integer',
+        'options' => 'array',
+    ];
+
+    /**
+     * Get the cart that owns the cart item.
+     */
+    public function cart(): BelongsTo
+    {
+        return $this->belongsTo(Cart::class);
+    }
+
+    /**
+     * Get the product that owns the cart item.
+     */
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Products::class);
+    }
+
+    /**
+     * Calculate the total price for the cart item.
+     *
+     * @return float
+     */
+    public function getTotalAttribute(): float
+    {
+        return $this->price * $this->quantity;
+    }
+
+}

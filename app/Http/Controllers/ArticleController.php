@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ArticleController extends Controller
 {
@@ -22,99 +23,72 @@ class ArticleController extends Controller
      return view ('dashboard.vendors.articles.create');
     }
 
-    public function handleCreate(Request $request){
+    public function handleCreate(Request $request)
+    {
+        // Valider les données du formulaire
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric|min:0',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'category_id' => 'nullable|exists:categories,id'
+        ], [
+            'name.required' => 'Le nom du plan est requis',
+            'name.max' => 'Le nom ne doit pas dépasser 255 caractères',
+            'description.required' => 'La description du plan est requise',
+            'price.required' => 'Le prix du plan est requis',
+            'price.numeric' => 'Le prix doit être un nombre',
+            'price.min' => 'Le prix ne peut pas être négatif',
+            'image.image' => 'Le fichier doit être une image',
+            'image.mimes' => 'Les formats d\'image acceptés sont : jpeg, png, jpg, gif',
+            'image.max' => 'L\'image ne doit pas dépasser 2 Mo',
+            'category_id.exists' => 'La catégorie sélectionnée n\'est pas valide'
+        ]);
+
+        // Démarrer une transaction de base de données
+        DB::beginTransaction();
+
         try {
-            $request->validate([
-                'name' => 'required',
-                'description' =>'required',
-                'price' => 'required|integer'
-            ],[
-                'name.required'=> 'Le nom du produit est requis',
-                'description.required' => 'La description du produit est requise',
-                'price.required'=>'Le prix du produit est requis'
-            ]);
-
-            $imagePath = '';
-
+            // Créer un nouveau produit
+            $product = new Products();
+            $product->name = $validatedData['name'];
+            $product->description = $validatedData['description'];
+            $product->price = $validatedData['price'];
+            $product->vendor_id = auth('vendor')->id();
+            $product->status = true; // Par défaut, le produit est actif
+            
+            // Gérer l'upload de l'image si elle est fournie
             if ($request->hasFile('image')) {
-                $imagePath .= $request->file('image')->store('images', 'public');
-                # code...
-            }
-
-
-            $produit = new Products();
-            $produit->image =$imagePath;
-            $produit->name = $request->name;
-            $produit->description = $request->description;
-            $produit->price = $request->price;
-            $produit->vendor_id = auth('vendor')->user()->id;
-
-
-            if ($produit->save()) {
-                return redirect()->back()->with('success', 'Enregistré avec succès');
+                $imagePath = $request->file('image')->store('public/images/articles');
+                $product->image = str_replace('public/', '', $imagePath);
+            } else {
+                $product->image = 'images/default-article.jpg';
             }
             
+            // Sauvegarder le produit
+            $product->save();
 
-            // dd($produit);
+            // Valider la transaction
+            DB::commit();
 
-        } catch (Exception $e) {
-            dd($e);
+            // Rediriger avec un message de succès
+            return redirect()
+                ->route('articles.index')
+                ->with('success', 'Le plan a été créé avec succès.');
+                
+        } catch (\Exception $e) {
+            // En cas d'erreur, annuler la transaction
+            DB::rollBack();
+            
+            // Journaliser l'erreur
+            Log::error('Erreur lors de la création du plan : ' . $e->getMessage());
+            Log::error($e->getTraceAsString());
+            
+            // Rediriger avec un message d'erreur
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'Une erreur est survenue lors de la création du plan : ' . $e->getMessage());
         }
-
-
-      
-
-
-        // try{
-        //     DB::beginTransaction();
-
-    //         $productData = [
-    //             'image'=>$request->image,
-    //             'name'=>$request->name,
-    //             'price'=>$request->price,
-    //             'description'=>$request->description,
-    //             'vendor_id'=>auth('vendor')->user()->id,
-
-    //         ];
-
-    
-    //  $product = Products::create($productData);
-
-
-
-//  $this->handleImageUpload($product, $request,'image', 'cloud_files/articles','cloud_file_id');
-//     //Gérer ici l'upload des images 
-
-//             DB::commit();
-//             return redirect()->route('articles.index')->
-//             with('success',' Produit enregistré');
-//         }catch(Exception $e){
-
-//             DB::rollback();
-//             return redirect()->back()->with('error',
-//             $e->getMessage());
-//         }
-    // }
-
-    
-
-
-//     public function handleImageUpload($data, $request, 
-//     $inputKey, $destination, $attributeName)
-//     {
-// if($request->hasFile('$inputKey')){
-// $filePath = $request->file($inputKey)->
-// store("destination", 'public');
-
-// $cloudFile = CloudFile::create([
-//     'path' => $filePath
-// ]);
-
-// $data->{$attributeName} = $cloudFile->id;
-// $data->update();
-//    }
- 
-//   }
-}
-
+    }
 }

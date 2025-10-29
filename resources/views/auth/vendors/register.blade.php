@@ -1,62 +1,79 @@
 @extends('layouts.website-layout')
 @section('content')
+<div class="auth-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5 col-lg-4">
+                <div class="card auth-card">
+                    <div class="auth-header">
+                        <h2><i class="bi bi-shop me-2"></i>Espace Vendeur</h2>
+                        <p>Créez votre boutique gratuitement</p>
+                    </div>
 
-<link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+                    <div class="auth-body">
+                        <img src="https://cdn.pixabay.com/photo/2017/07/31/11/31/laptop-2557586_960_720.png"
+                            class="auth-avatar" alt="Avatar">
 
-<div class="container">
-    <div class="row">
-      <div class="col-md-6 offset-md-3">
-        <h2 class="text-center text-dark mt-5">ESPACE VENDEUR</h2>
-        <div class="text-center mb-5 text-dark">Rejoindre en tant que vendeur</div>
-        <div class="card my-5">
+                        @if (Session::get('success'))
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="bi bi-check-circle me-2"></i>{{ Session::get('success') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        @endif
 
-          @if (Session::get('success'))
-          <div class="alert alert-success">{{Session::get('success')}}</div>
-          @endif
+                        <form method="POST" action="{{ route('vendors.handleRegister') }}">
+                            @csrf
 
-          <form    class="card-body cardbody-color p-lg-5"
-           method="POST"
-            action=" {{ route ('vendors.handleRegister') }} ">
-            
-          @method('post') 
-          @csrf
+                            <div class="mb-4">
+                                <label for="name" class="form-label-modern">
+                                    <i class="bi bi-shop-window me-1"></i>Nom de la boutique
+                                </label>
+                                <input type="text" class="form-control form-control-modern" id="name" name="name"
+                                    placeholder="Ma Super Boutique" value="{{ old('name') }}" required>
+                                @error('name')
+                                    <div class="text-danger mt-2"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>
+                                @enderror
+                            </div>
 
-            <div class="text-center">
-              <img src="https://imgs.search.brave.com/x-pEcp7Kw0Z6cqLf-bguU4ssnlBwLB3OYm9l0qbd4s0/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly90My5m/dGNkbi5uZXQvanBn/LzAxLzQxLzQwLzc2/LzM2MF9GXzE0MTQw/NzY4M19BbU91QnRJ/SDU5enZ5aTFUOXQw/WnFaYU15WUwwWUdG/WS5qcGc" class="img-fluid profile-image-pic img-thumbnail rounded-circle my-3"
-                width="200px" alt="profile">
+                            <div class="mb-4">
+                                <label for="email" class="form-label-modern">
+                                    <i class="bi bi-envelope me-1"></i>Adresse Email
+                                </label>
+                                <input type="email" class="form-control form-control-modern" id="email" name="email"
+                                    placeholder="contact@maboutique.com" value="{{ old('email') }}" required>
+                                @error('email')
+                                    <div class="text-danger mt-2"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="password" class="form-label-modern">
+                                    <i class="bi bi-lock me-1"></i>Mot de passe
+                                </label>
+                                <input type="password" class="form-control form-control-modern" id="password" name="password"
+                                    placeholder="••••••••" required>
+                                @error('password')
+                                    <div class="text-danger mt-2"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <button type="submit" class="btn btn-auth mb-3">
+                                <i class="bi bi-person-plus me-2"></i>Créer ma boutique
+                            </button>
+
+                            <div class="text-center">
+                                <p class="text-muted mb-0">
+                                    Déjà une boutique ? 
+                                    <a href="{{ route('vendors.login') }}" class="text-decoration-none fw-bold">
+                                        Se connecter
+                                    </a>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-
-            <div class="mb-3">
-              <input type="text" class="form-control" id="name" name="name"
-                placeholder="Nom du vendeur" value="{{ old('name') }}">
-
-                @error ('name')
-                 <div class="text-danger">{{ ($message) }}</div>
-                @enderror
-            </div>
-            <div class="mb-3">
-              <input type="text" class="form-control" id="email" name="email"
-                placeholder="Email@vendor.com" value="{{ old('email') }}" >
-                @error ('email')
-                 <div class="text-danger">{{ ($message) }}</div>
-                @enderror
-            </div>
-            <div class="mb-3">
-              <input type="password" class="form-control" id="password" name="password"  placeholder="Mot de passe"
-              value="{{ old('password') }}" >
-              @error ('password')
-                 <div class="text-danger">{{ ($message) }}</div>
-                @enderror
-            </div>
-            <div class="text-center"><button type="submit" class="btn btn-color px-5 mb-5 w-100">Créer mon Compte</button></div>
-            <div id="emailHelp" class="form-text text-center mb-5 text-dark">Déjà inscrit?<a href="{{ route('vendors.handleLogin')}}" class="text-dark fw-bold"> Connecter vous</a>
-            </div>
-          </form>
         </div>
-
-      </div>
     </div>
-  </div>
-
-
+</div>
 @endsection

@@ -1,0 +1,279 @@
+@extends('layouts.vendor-dashboard-layout')
+
+@section('content')
+<div class="container-fluid px-4 py-4">
+    <!-- Page Header avec design moderne -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 fw-bold text-dark mb-2">
+                        <i class="fas fa-plus-circle text-primary me-2"></i>Créer un Nouveau Plan
+                    </h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('vendors.dashboard') }}" class="text-decoration-none">
+                                    <i class="fas fa-home me-1"></i>Tableau de bord
+                                </a>
+                            </li>
+                            <li class="breadcrumb-item">
+                                <a href="{{ route('articles.index') }}" class="text-decoration-none">Plans</a>
+                            </li>
+                            <li class="breadcrumb-item active">Nouveau</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div>
+                    <a href="{{ route('articles.index') }}" class="btn btn-light shadow-sm">
+                        <i class="fas fa-arrow-left me-2"></i>Retour
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Détails du Plan</h5>
+                </div>
+                <div class="card-body">
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    @if (session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
+                    <form action="{{ route('articles.handleCreate') }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+
+                        <!-- Informations de base -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold border-bottom pb-2 mb-3">Informations de base</h6>
+                            
+                            <!-- Nom du plan -->
+                            <div class="mb-3">
+                                <label for="name" class="form-label fw-semibold">
+                                    <i class="fas fa-heading me-2 text-primary"></i>Nom du plan <span class="text-danger">*</span>
+                                </label>
+                                <input type="text" 
+                                       class="form-control form-control-lg @error('name') is-invalid @enderror" 
+                                       id="name" 
+                                       name="name" 
+                                       value="{{ old('name') }}" 
+                                       placeholder="Ex: Villa Moderne 3 Chambres avec Piscine" 
+                                       required>
+                                @error('name')
+                                    <div class="invalid-feedback">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
+                            <!-- Catégorie -->
+                            <div class="mb-3">
+                                <label for="category_id" class="form-label fw-semibold">
+                                    <i class="fas fa-tag me-2 text-primary"></i>Catégorie
+                                </label>
+                                <select class="form-select form-select-lg @error('category_id') is-invalid @enderror" 
+                                        id="category_id" 
+                                        name="category_id">
+                                    <option value="">Sélectionnez une catégorie</option>
+                                    @foreach($categories ?? [] as $category)
+                                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                            {{ $category->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('category_id')
+                                    <div class="invalid-feedback">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+
+                            <!-- Description -->
+                            <div class="mb-4">
+                                <label for="description" class="form-label fw-semibold">
+                                    <i class="fas fa-align-left me-2 text-primary"></i>Description détaillée
+                                </label>
+                                <textarea class="form-control @error('description') is-invalid @enderror" 
+                                          id="description" 
+                                          name="description" 
+                                          rows="5" 
+                                          placeholder="Décrivez en détail les caractéristiques de votre plan...">{{ old('description') }}</textarea>
+                                <div class="form-text">
+                                    Incluez les détails importants comme le nombre de pièces, la surface, les matériaux, etc.
+                                </div>
+                                @error('description')
+                                    <div class="invalid-feedback">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                        </div>
+
+                        <!-- Prix -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold border-bottom pb-2 mb-3">Prix</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="price" class="form-label fw-semibold">
+                                        <i class="fas fa-tag me-2 text-primary"></i>Prix (FCFA) <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="number" 
+                                               class="form-control form-control-lg @error('price') is-invalid @enderror" 
+                                               id="price" 
+                                               name="price" 
+                                               value="{{ old('price') }}" 
+                                               min="0" 
+                                               step="0.01" 
+                                               placeholder="0.00" 
+                                               required>
+                                        <span class="input-group-text">FCFA</span>
+                                        @error('price')
+                                            <div class="invalid-feedback">
+                                                <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                    <div class="form-text">
+                                        Le prix doit être indiqué en Francs CFA (FCFA)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Image -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold border-bottom pb-2 mb-3">Image du plan</h6>
+                            <div class="mb-3">
+                                <label for="image" class="form-label fw-semibold">
+                                    <i class="fas fa-image me-2 text-primary"></i>Image principale
+                                </label>
+                                <input type="file" 
+                                       class="form-control form-control-lg @error('image') is-invalid @enderror" 
+                                       id="image" 
+                                       name="image" 
+                                       accept="image/*">
+                                <div class="form-text">
+                                    Formats acceptés : JPG, PNG, GIF (max 2Mo). Taille recommandée : 1200x800px
+                                </div>
+                                @error('image')
+                                    <div class="invalid-feedback">
+                                        <i class="fas fa-exclamation-circle me-1"></i>{{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
+                            
+                            <!-- Aperçu de l'image -->
+                            <div class="text-center mt-3">
+                                <img id="imagePreview" src="{{ asset('images/default-placeholder.png') }}" 
+                                     class="img-fluid rounded border" 
+                                     style="max-height: 300px; display: none;">
+                            </div>
+                        </div>
+
+                        <!-- Boutons de soumission -->
+                        <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
+                            <button type="reset" class="btn btn-outline-secondary">
+                                <i class="fas fa-undo me-2"></i>Réinitialiser
+                            </button>
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="fas fa-save me-2"></i>Enregistrer le plan
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Aide à la création -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="fas fa-lightbulb me-2 text-warning"></i>Conseils pour un bon référencement</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <h6 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Astuces pour bien décrire votre plan</h6>
+                        <ul class="mb-0 ps-3">
+                            <li>Utilisez un titre clair et descriptif</li>
+                            <li>Détailler les caractéristiques techniques</li>
+                            <li>Mentionnez les matériaux utilisés</li>
+                            <li>Indiquez les dimensions et surfaces</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="alert alert-light">
+                        <h6 class="alert-heading"><i class="fas fa-camera me-2"></i>Conseils pour les images</h6>
+                        <ul class="mb-0 ps-3">
+                            <li>Utilisez des images de haute qualité</li>
+                            <li>Prenez des photos sous un bon éclairage</li>
+                            <li>Montrez les différentes perspectives</li>
+                            <li>Évitez les images floues ou sombres</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Aperçu en temps réel -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0"><i class="fas fa-eye me-2 text-primary"></i>Aperçu</h5>
+                </div>
+                <div class="card-body">
+                    <div class="small text-muted mb-3">
+                        Voici comment votre plan apparaîtra aux visiteurs :
+                    </div>
+                    <div class="border rounded p-3 bg-light">
+                        <h5 id="previewTitle" class="mb-2">Titre du plan</h5>
+                        <p id="previewDescription" class="small text-muted mb-2">Description du plan...</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-primary">Nouveau</span>
+                            <span class="fw-bold" id="previewPrice">0 FCFA</span>
+                        </div>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                        </div>
+                        <p class="text-primary fw-bold mb-0">0 CFA</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Image Preview
+    document.getElementById('image').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('imagePreview').innerHTML = 
+                    '<img src="' + e.target.result + '" class="img-fluid rounded" style="max-height: 300px;">';
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+@endsection

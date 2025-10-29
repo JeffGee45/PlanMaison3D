@@ -1,61 +1,75 @@
 @extends('layouts.website-layout')
 @section('content')
+<div class="auth-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5 col-lg-4">
+                <div class="card auth-card">
+                    <div class="auth-header">
+                        <h2><i class="bi bi-shop me-2"></i>Espace Vendeur</h2>
+                        <p>Connectez-vous à votre boutique</p>
+                    </div>
 
-<link rel="stylesheet" href="{{ asset('css/auth.css') }}">
+                    <div class="auth-body">
+                        <img src="https://cdn.pixabay.com/photo/2017/07/31/11/31/laptop-2557586_960_720.png"
+                            class="auth-avatar" alt="Avatar">
 
-<div class="container">
-    <div class="row">
-      <div class="col-md-6 offset-md-3">
-        <h2 class="text-center text-dark mt-5">ESPACE VENDEUR</h2>
-        <div class="text-center mb-5 text-dark">Rejoindre en tant que vendeur</div>
-        <div class="card my-5">
+                        @if (Session::get('error'))
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="bi bi-exclamation-triangle me-2"></i>{{ Session::get('error') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        @endif
 
-          @if (Session::get('success'))
-          <div class="alert alert-success">{{Session::get('success')}}</div>
-          @endif
-   
-          @if (Session::get('error'))
-          <div class="alert alert-danger">{{Session::get('error')}}</div>
-          @endif
-          
-          <form    class="card-body cardbody-color p-lg-5"
-           method="POST"
-            action=" {{ route ('vendors.handleLogin') }} ">
-            
-          @method('post') 
-          @csrf
+                        @if (Session::get('success'))
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="bi bi-check-circle me-2"></i>{{ Session::get('success') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        @endif
 
-            <div class="text-center">
-              <img src="https://imgs.search.brave.com/x-pEcp7Kw0Z6cqLf-bguU4ssnlBwLB3OYm9l0qbd4s0/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly90My5m/dGNkbi5uZXQvanBn/LzAxLzQxLzQwLzc2/LzM2MF9GXzE0MTQw/NzY4M19BbU91QnRJ/SDU5enZ5aTFUOXQw/WnFaYU15WUwwWUdG/WS5qcGc" class="img-fluid profile-image-pic img-thumbnail rounded-circle my-3"
-                width="200px" alt="profile">
+                        <form method="POST" action="{{ route('vendors.handleLogin') }}">
+                            @csrf
+
+                            <div class="mb-4">
+                                <label for="email" class="form-label-modern">
+                                    <i class="bi bi-envelope me-1"></i>Adresse Email
+                                </label>
+                                <input type="email" class="form-control form-control-modern" id="email" name="email"
+                                    placeholder="contact@maboutique.com" value="{{ old('email') }}" required>
+                                @error('email')
+                                    <div class="text-danger mt-2"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="password" class="form-label-modern">
+                                    <i class="bi bi-lock me-1"></i>Mot de passe
+                                </label>
+                                <input type="password" class="form-control form-control-modern" id="password" name="password"
+                                    placeholder="••••••••" required>
+                                @error('password')
+                                    <div class="text-danger mt-2"><i class="bi bi-exclamation-circle me-1"></i>{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <button type="submit" class="btn btn-auth mb-3">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>Se Connecter
+                            </button>
+
+                            <div class="text-center">
+                                <p class="text-muted mb-0">
+                                    Pas encore de boutique ? 
+                                    <a href="{{ route('vendors.register') }}" class="text-decoration-none fw-bold">
+                                        Créer une boutique
+                                    </a>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-
-            
-            <div class="mb-3">
-              <input type="text" class="form-control" id="email" name="email"
-                placeholder="vendor@exemple.com" value="{{ old('email') }}" >
-                @error ('email')
-                 <div class="text-danger">{{ ($message) }}</div>
-                @enderror
-            </div>
-            <div class="mb-3">
-              <input type="password" class="form-control" id="password" name="password"  placeholder="Mot de passe"
-              value="{{ old('password') }}" >
-              @error ('password')
-                 <div class="text-danger">{{ ($message) }}</div>
-                @enderror
-            </div>
-            <div class="text-center"><button type="submit" class="btn btn-color px-5 mb-5 w-100">Me connecter à ma boutique</button></div>
-            <div id="emailHelp" class="form-text text-center mb-5 text-dark">Pas de compte?
-                <a href="{{ route('vendors.handleRegister')}}" class="text-dark fw-bold"> Crée mon compte</a>
-            </div>
-
-        </form>
         </div>
-
-      </div>
     </div>
-  </div>
-
-
+</div>
 @endsection
