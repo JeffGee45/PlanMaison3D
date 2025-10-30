@@ -5,7 +5,9 @@ namespace Database\Seeders;
 use App\Models\HousePlan;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Faker\Factory as Faker;
 
 class HousePlanSeeder extends Seeder
 {
@@ -14,49 +16,49 @@ class HousePlanSeeder extends Seeder
      */
     public function run(): void
     {
-        HousePlan::create([
-            'name' => 'Villa Moderne R+1',
-            'slug' => Str::slug('Villa Moderne R+1'),
-            'description' => 'Une magnifique villa moderne avec un étage, idéale pour une famille. Espaces ouverts et lumineux.',
-            'surface_area' => 150,
-            'floors' => 1,
-            'bedrooms' => 4,
-            'bathrooms' => 2,
-            'price' => 2500.00,
-            'image_path' => 'img/Maison_1.jpg',
-            'plan_2d_path' => 'img/M10.jpg',
-            'panorama_image_path' => 'img/Maison3.jpg',
-            'is_published' => true, // Assurez-vous que c'est bien à true pour que le plan soit visible
-        ]);
+        Schema::disableForeignKeyConstraints();
+        HousePlan::truncate();
+        Schema::enableForeignKeyConstraints();
 
-        HousePlan::create([
-            'name' => 'Maison Familiale Traditionnelle',
-            'slug' => Str::slug('Maison Familiale Traditionnelle'),
-            'description' => 'Une maison familiale chaleureuse avec un grand jardin. Parfait pour les familles nombreuses.',
-            'surface_area' => 180,
-            'floors' => 0, // Plain-pied
-            'bedrooms' => 5,
-            'bathrooms' => 3,
-            'price' => 2800.00,
-            'image_path' => 'img/Maison3.jpg',
-            'plan_2d_path' => 'img/M11.jpg',
-            'panorama_image_path' => 'img/Maison5.jpg',
-            'is_published' => true, // Assurez-vous que c'est bien à true pour que le plan soit visible
-        ]);
-
-        HousePlan::create([
-            'name' => 'Duplex Urbain R+2',
-            'slug' => Str::slug('Duplex Urbain R+2'),
-            'description' => 'Un duplex moderne sur deux étages, optimisé pour les espaces urbains. Vue imprenable depuis le toit-terrasse.',
-            'surface_area' => 120,
-            'floors' => 2,
-            'bedrooms' => 3,
-            'bathrooms' => 2,
-            'price' => 3200.00,
-            'image_path' => 'img/Maison5.jpg',
-            'plan_2d_path' => 'img/M12.jpg',
-            'panorama_image_path' => 'img/M6.jpg',
-            'is_published' => true, // Assurez-vous que c'est bien à true pour que le plan soit visible
-        ]);
+        $faker = Faker::create();
+        
+        // Liste des images disponibles dans le dossier public/img
+        $images = [
+            'Maison_1.jpg',
+            'Maison2.jpg',
+            'Maison3.jpg',
+            'Maison4.jpg',
+            'Maison5.jpg',
+            'M6.jpg',
+            'M7.jpg',
+            'M8.jpg',
+            'M9.jpg',
+            'M10.jpg',
+            'M11.jpg',
+            'M12.jpg'
+        ];
+        
+        $styles = ['moderne', 'traditionnel', 'contemporain', 'classique', 'minimaliste'];
+        
+        for ($i = 0; $i < count($images); $i++) {
+            $name = 'Maison ' . ($i + 1);
+            $imagePath = 'img/' . $images[$i];
+            
+            HousePlan::create([
+                'name' => $name,
+                'slug' => Str::slug($name),
+                'style' => $styles[array_rand($styles)],
+                'description' => $faker->realText(),
+                'surface_area' => $faker->numberBetween(80, 350),
+                'floors' => $faker->numberBetween(1, 3),
+                'bedrooms' => $faker->numberBetween(2, 6),
+                'bathrooms' => $faker->numberBetween(1, 4),
+                'price' => $faker->randomFloat(2, 1500, 4000),
+                'image_path' => $imagePath,
+                'plan_2d_path' => 'img/M' . (($i % 6) + 10) . '.jpg', // Utilisation des images M10, M11, M12, etc.
+                'panorama_image_path' => $imagePath, // Même image pour le panorama pour l'instant
+                'is_published' => true,
+            ]);
+        }
     }
 }

@@ -49,15 +49,15 @@
                 <ul class="list-unstyled">
                     <li class="mb-3">
                         <i class="bi bi-geo-alt-fill me-2"></i>
-                        <span class="text-white-50">123 Avenue de l'Architecture, Abidjan, Côte d'Ivoire</span>
+                        <span>123 Avenue de l'Architecture, Lomé, Togo</span>
                     </li>
                     <li class="mb-3">
                         <i class="bi bi-telephone-fill me-2"></i>
-                        <a href="tel:+2250123456789" class="text-white-50">+225 01 23 45 67 89</a>
+                        <a href="tel:+22870123456" class="text-white-50">+228 70 12 34 56</a>
                     </li>
                     <li class="mb-3">
                         <i class="bi bi-envelope-fill me-2"></i>
-                        <a href="mailto:contact@planmaison3d.com" class="text-white-50">contact@planmaison3d.com</a>
+                        <a href="mailto:contact@planmaison3d.tg" class="text-white-50">contact@planmaison3d.tg</a>
                     </li>
                     <li>
                         <i class="bi bi-clock-fill me-2"></i>

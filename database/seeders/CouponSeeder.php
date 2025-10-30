@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Coupon;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Schema;
 
 class CouponSeeder extends Seeder
 {
@@ -13,7 +14,10 @@ class CouponSeeder extends Seeder
      */
     public function run(): void
     {
-        // Création de coupons de test
+        Schema::disableForeignKeyConstraints();
+        Coupon::truncate();
+        Schema::enableForeignKeyConstraints();
+
         Coupon::create([
             'code' => 'WELCOME10',
             'name' => 'Bienvenue',
@@ -24,7 +28,6 @@ class CouponSeeder extends Seeder
             'starts_at' => now(),
             'expires_at' => now()->addMonth(),
             'usage_limit' => 100,
-            'usage_count' => 0,
             'is_active' => true,
         ]);
 
@@ -38,7 +41,6 @@ class CouponSeeder extends Seeder
             'starts_at' => now(),
             'expires_at' => now()->addMonths(2),
             'usage_limit' => 50,
-            'usage_count' => 5,
             'is_active' => true,
         ]);
 
@@ -52,7 +54,6 @@ class CouponSeeder extends Seeder
             'starts_at' => now()->subMonths(2),
             'expires_at' => now()->subMonth(),
             'usage_limit' => 100,
-            'usage_count' => 100,
             'is_active' => false,
         ]);
     }

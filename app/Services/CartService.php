@@ -46,8 +46,8 @@ class CartService
             );
         }
         
-        // Charger les articles du panier
-        $this->items = $this->cart->items()->with('product')->get()->keyBy('product_id');
+        // Charger les articles du panier avec la relation housePlan
+        $this->items = $this->cart->items()->with('housePlan')->get()->keyBy('product_id');
         
         // Charger le coupon s'il existe
         if ($this->cart->coupon_code) {
@@ -64,7 +64,7 @@ class CartService
      */
     public function getCart()
     {
-        return $this->cart->load('items.product');
+        return $this->cart->load('items.housePlan');
     }
     
     /**
@@ -117,29 +117,35 @@ class CartService
      */
     public function addItem(int $productId, int $quantity = 1, array $options = [])
     {
-        $product = Products::findOrFail($productId);
+        $housePlan = \App\Models\HousePlan::findOrFail($productId);
         
         // Vérifier si le produit est déjà dans le panier
-        if ($this->items->has($productId)) {
+        $existingItem = $this->cart->items()->where('product_id', $productId)->first();
+        
+        if ($existingItem) {
             // Mettre à jour la quantité si le produit existe déjà
-            $cartItem = $this->items[$productId];
-            $cartItem->quantity += $quantity;
-            $cartItem->save();
+            $existingItem->quantity += $quantity;
+            $existingItem->save();
+            $this->items->put($productId, $existingItem);
         } else {
             // Créer un nouvel élément de panier
             $cartItem = new CartItem([
-                'product_id' => $product->id,
+                'cart_id' => $this->cart->id,
+                'product_id' => $housePlan->id,
                 'quantity' => $quantity,
-                'price' => $product->price,
+                'price' => $housePlan->price,
                 'options' => $options,
             ]);
             
-            $this->cart->items()->save($cartItem);
+            $cartItem->save();
             $this->items->put($productId, $cartItem);
         }
         
+        // Recharger les relations et mettre à jour les totaux
+        $this->cart->load('items.housePlan');
         $this->calculateTotals();
-        return $this->cart->load('items.product');
+        
+        return $this->cart;
     }
     
     /**
@@ -172,14 +178,17 @@ class CartService
     public function removeItem(int $itemId)
     {
         $cart = $this->getCart();
-        $item = $cart->items->firstWhere('id', $itemId);
+        $item = $cart->items()->find($itemId);
         
         if ($item) {
             $item->delete();
-            $cart->calculateTotals();
+            // Recharger les articles du panier
+            $this->items = $cart->items()->with('housePlan')->get()->keyBy('product_id');
+            // Recalculer les totaux
+            $this->calculateTotals();
         }
         
-        return $cart->load('items.product');
+        return $cart;
     }
     
     /**

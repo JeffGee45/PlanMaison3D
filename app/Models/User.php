@@ -21,7 +21,31 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
+    
+    /**
+     * Vérifie si l'utilisateur est un administrateur
+     *
+     * @return bool
+     */
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    /**
+     * Get the orders for the user.
+     */
+    public function orders()
+    {
+        return $this->hasMany(\App\Models\Order::class);
+    }
+
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
     // protected $guarded =[];
 
     /**

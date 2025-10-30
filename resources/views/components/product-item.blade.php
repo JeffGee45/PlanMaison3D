@@ -47,20 +47,16 @@
         @auth
         <div class="card-footer p-3 pt-0 border-top-0 bg-transparent">
             <div class="d-grid gap-2">
-                <a class="btn btn-product" href="{{route('order.article',$article->id)}}">
-                    <i class="bi bi-cart-plus me-2"></i>Acheter Maintenant
-                </a>
+                <form action="{{ route('cart.add') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="product_id" value="{{ $article->id }}">
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="submit" class="btn btn-product w-100">
+                        <i class="bi-cart-plus me-2"></i>Ajouter au panier
+                    </button>
+                </form>
                 <button class="btn btn-outline-secondary btn-sm" type="button">
                     <i class="bi bi-eye me-1"></i>Aperçu
-                </button>
-            </div>
-        </div>
-        @else
-        <div class="card-footer p-3 pt-0 border-top-0 bg-transparent">
-            <div class="d-grid gap-2">
-                <a class="btn btn-product" href="{{route('user.login')}}">
-                    <i class="bi bi-lock me-2"></i>Connectez-vous pour acheter
-                </a>
             </div>
         </div>
         @endauth

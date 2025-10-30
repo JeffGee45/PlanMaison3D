@@ -5,25 +5,79 @@ namespace App\Http\Controllers;
 use App\Models\HousePlan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class HousePlanController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $plans = HousePlan::where('is_published', true)->latest()->paginate(12);
+        $query = HousePlan::query()->where('is_published', true);
+
+        // Filtrage par style
+        if ($request->filled('style')) {
+            $query->where('style', $request->input('style'));
+        }
+
+        // Filtrage par nombre de chambres
+        if ($request->filled('bedrooms')) {
+            $query->where('bedrooms', $request->input('bedrooms'));
+        }
+
+        // Filtrage par prix
+        if ($request->filled('price_min')) {
+            $query->where('price', '>=', $request->input('price_min'));
+        }
+        if ($request->filled('price_max')) {
+            $query->where('price', '<=', $request->input('price_max'));
+        }
+
+        // Filtrage par superficie
+        if ($request->filled('surface_min')) {
+            $query->where('surface_area', '>=', $request->input('surface_min'));
+        }
+        if ($request->filled('surface_max')) {
+            $query->where('surface_area', '<=', $request->input('surface_max'));
+        }
+
+        // Récupérer les paramètres de requête actuels pour les conserver dans la pagination
+        $queryParams = $request->query();
+        
+        // Appliquer le tri et la pagination
+        $plans = $query->latest()->paginate(12)->appends($queryParams);
         
         // Ajout d'une vérification pour chaque plan
-        $plans->each(function($plan) {
+        foreach ($plans as $plan) {
             $this->ensureImagePathsExist($plan);
-        });
+        }
+
+        // Récupérer les options de filtre pour la vue
+        $styles = HousePlan::where('is_published', true)->distinct()->pluck('style')->filter()->sort();
         
-        return view('house-plans.index', compact('plans'));
+        return view('house-plans.index', [
+            'plans' => $plans,
+            'styles' => $styles,
+            'filters' => $request->all(), // Pour conserver les filtres dans le formulaire
+        ]);
     }
 
-    public function show(HousePlan $plan)
+    public function show($plan)
     {
+        // Récupérer le plan par son slug ou son ID
+        $plan = HousePlan::where('slug', $plan)
+            ->orWhere('id', $plan)
+            ->firstOrFail();
+            
         $this->ensureImagePathsExist($plan);
         return view('house-plans.show', compact('plan'));
+    }
+
+    public function downloadPDF(HousePlan $plan)
+    {
+        $this->ensureImagePathsExist($plan);
+
+        $pdf = Pdf::loadView('house-plans.pdf', compact('plan'));
+        
+        return $pdf->download($plan->slug . '.pdf');
     }
     
     /**

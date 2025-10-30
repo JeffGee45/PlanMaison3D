@@ -13,30 +13,19 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Création d'un utilisateur admin
+        // Supprimer les anciens utilisateurs pour éviter les doublons
+        User::query()->delete();
+
+        // Créer un administrateur
         User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@example.com',
+            'name' => 'Admin',
+            'email' => 'admin@planmaison3d.com',
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
             'role' => 'admin',
         ]);
 
-        // Création de quelques utilisateurs de test
-        User::create([
-            'name' => 'Jean Dupont',
-            'email' => 'jean.dupont@example.com',
-            'password' => Hash::make('password'),
-            'email_verified_at' => now(),
-            'role' => 'user',
-        ]);
-
-        User::create([
-            'name' => 'Marie Martin',
-            'email' => 'marie.martin@example.com',
-            'password' => Hash::make('password'),
-            'email_verified_at' => now(),
-            'role' => 'user',
-        ]);
+        // Créer 5 utilisateurs de test
+        User::factory(5)->create();
     }
 }

@@ -46,14 +46,31 @@
                         <i class="bi bi-telephone me-1"></i>Contact
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('blog.index') }}">
+                        <i class="bi bi-journal-text me-1"></i>Blog
+                    </a>
+                </li>
             </ul>
             
             <div class="d-flex align-items-center gap-2">
-                <button class="btn btn-cart" type="button">
+                <a href="{{ route('cart.index') }}" class="btn btn-cart position-relative">
                     <i class="bi-cart-fill me-2"></i>
                     Panier
-                    <span class="badge bg-danger ms-2 rounded-pill">0</span>
-                </button>
+                    @php
+                        $cartCount = \App\Models\Cart::where('user_id', auth()->id())
+                            ->orWhere('session_id', session()->getId())
+                            ->first()
+                            ?->items
+                            ?->sum('quantity') ?? 0;
+                    @endphp
+                    @if($cartCount > 0)
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{ $cartCount }}
+                            <span class="visually-hidden">articles dans le panier</span>
+                        </span>
+                    @endif
+                </a>
 
                 @guest
                 <div class="dropdown">
@@ -83,15 +100,22 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                         <li>
-                            <a class="dropdown-item" href="#!">
+                            <a class="dropdown-item" href="{{ route('user.profile') }}">
                                 <i class="bi bi-person me-2"></i>Mon Profil
                             </a>
                         </li>
                         <li>
-                            <a class="dropdown-item" href="#!">
+                            <a class="dropdown-item" href="{{ route('user.orders') }}">
                                 <i class="bi bi-bag me-2"></i>Mes Commandes
                             </a>
                         </li>
+                        @if(auth()->user()->is_admin)
+                        <li>
+                            <a class="dropdown-item" href="{{ route('admin.posts.index') }}">
+                                <i class="bi bi-journal-text me-2"></i>Admin Blog
+                            </a>
+                        </li>
+                        @endif
                         <li><hr class="dropdown-divider" /></li>
                         <li>
                             <a class="dropdown-item text-danger" href="{{ route('user.logout') }}">

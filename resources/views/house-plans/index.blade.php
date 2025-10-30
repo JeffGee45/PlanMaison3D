@@ -22,36 +22,45 @@
         <div class="row mb-5">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-body">
-                        <form class="row g-3">
-                            <div class="col-md-3">
-                                <label for="surface" class="form-label">Surface (m²)</label>
-                                <select class="form-select" id="surface">
-                                    <option selected>Toutes les surfaces</option>
-                                    <option>Moins de 80 m²</option>
-                                    <option>80 - 120 m²</option>
-                                    <option>Plus de 120 m²</option>
+                    <div class="card-body p-4">
+                        <form action="{{ route('house-plans.index') }}" method="GET" class="row g-3 align-items-end">
+                            <div class="col-lg-3 col-md-6">
+                                <label for="style" class="form-label">Style</label>
+                                <select name="style" id="style" class="form-select">
+                                    <option value="">Tous les styles</option>
+                                    @foreach($styles as $style)
+                                        <option value="{{ $style }}" {{ ($filters['style'] ?? '') == $style ? 'selected' : '' }}>
+                                            {{ ucfirst($style) }}
+                                        </option>
+                                    @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-3">
-                                <label for="chambres" class="form-label">Chambres</label>
-                                <select class="form-select" id="chambres">
-                                    <option selected>Toutes</option>
-                                    <option>1-2 chambres</option>
-                                    <option>3-4 chambres</option>
-                                    <option>5+ chambres</option>
+                            <div class="col-lg-2 col-md-6">
+                                <label for="bedrooms" class="form-label">Chambres</label>
+                                <select name="bedrooms" id="bedrooms" class="form-select">
+                                    <option value="">Toutes</option>
+                                    @for ($i = 1; $i <= 6; $i++)
+                                        <option value="{{ $i }}" {{ ($filters['bedrooms'] ?? '') == $i ? 'selected' : '' }}>
+                                            {{ $i }} {{ $i > 1 ? 'chambres' : 'chambre' }}{{ $i === 6 ? '+' : '' }}
+                                        </option>
+                                    @endfor
                                 </select>
                             </div>
-                            <div class="col-md-3">
-                                <label for="prix" class="form-label">Prix max</label>
-                                <select class="form-select" id="prix">
-                                    <option selected>Tous les prix</option>
-                                    <option>Moins de 10 000 000 FCFA</option>
-                                    <option>10 - 30 millions FCFA</option>
-                                    <option>Plus de 30 millions FCFA</option>
-                                </select>
+                            <div class="col-lg-3 col-md-6">
+                                <label for="price_min" class="form-label">Prix (FCFA)</label>
+                                <div class="input-group">
+                                    <input type="number" name="price_min" id="price_min" class="form-control" placeholder="Min" value="{{ $filters['price_min'] ?? '' }}">
+                                    <input type="number" name="price_max" id="price_max" class="form-control" placeholder="Max" value="{{ $filters['price_max'] ?? '' }}">
+                                </div>
                             </div>
-                            <div class="col-md-3 d-flex align-items-end">
+                            <div class="col-lg-2 col-md-6">
+                                <label for="surface_min" class="form-label">Surface (m²)</label>
+                                <div class="input-group">
+                                    <input type="number" name="surface_min" id="surface_min" class="form-control" placeholder="Min" value="{{ $filters['surface_min'] ?? '' }}">
+                                    <input type="number" name="surface_max" id="surface_max" class="form-control" placeholder="Max" value="{{ $filters['surface_max'] ?? '' }}">
+                                </div>
+                            </div>
+                            <div class="col-lg-2 col-md-12">
                                 <button type="submit" class="btn btn-primary w-100">Filtrer</button>
                             </div>
                         </form>
@@ -65,57 +74,47 @@
             @forelse ($plans as $plan)
                 <div class="col">
                     <div class="card h-100 shadow-sm border-0 hover-shadow transition-all">
-                        <div class="position-relative" style="height: 220px; overflow: hidden;">
-                            @if($plan->image_path && file_exists(public_path($plan->image_path)))
-                                <img src="{{ asset($plan->image_path) }}" 
-                                     class="card-img-top h-100" 
-                                     alt="{{ $plan->name }}" 
-                                     style="object-fit: cover; transition: transform 0.3s ease;">
+                        <a href="{{ route('house-plans.show', $plan->slug) }}" class="text-decoration-none">
+                            <div class="position-relative" style="height: 220px; overflow: hidden;">
+                                @if($plan->image_path && file_exists(public_path($plan->image_path)))
+                                    <img src="{{ asset($plan->image_path) }}" 
+                                         class="card-img-top h-100" 
+                                         alt="{{ $plan->name }}" 
+                                         style="object-fit: cover; transition: transform 0.3s ease;">
+                                @else
+                                    <div class="d-flex align-items-center justify-content-center bg-light h-100">
+                                        <div class="text-center p-4">
+                                            <i class="bi bi-house-door text-muted" style="font-size: 3rem;"></i>
+                                            <p class="mt-2 mb-0 text-muted">Aperçu non disponible</p>
+                                        </div>
+                                    </div>
+                                @endif
                                 <div class="position-absolute bottom-0 start-0 p-3">
                                     <span class="badge bg-primary">Nouveau</span>
                                 </div>
-                            @else
-                                <div class="d-flex align-items-center justify-content-center bg-light h-100">
-                                    <div class="text-center p-4">
-                                        <i class="bi bi-house-door text-muted" style="font-size: 3rem;"></i>
-                                        <p class="mt-2 mb-0 text-muted">Aperçu non disponible</p>
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h5 class="card-title mb-1">{{ $plan->name }}</h5>
-                                <span class="badge bg-success">En stock</span>
                             </div>
-                            <p class="card-text text-muted">{{ Str::limit($plan->description, 80) }}</p>
+                        </a>
+                        <div class="card-body p-3">
+                            <h5 class="card-title mb-1"><a href="{{ route('house-plans.show', $plan->slug) }}" class="text-dark text-decoration-none">{{ $plan->name }}</a></h5>
+                            <p class="card-text text-muted small mb-2">{{ Str::limit($plan->description, 80) }}</p>
                             <div class="d-flex flex-wrap gap-2 mb-3">
-                                <span class="badge bg-light text-dark">
-                                    <i class="bi bi-rulers me-1"></i> {{ $plan->surface_area }} m²
-                                </span>
-                                <span class="badge bg-light text-dark">
-                                    <i class="bi bi-door-closed me-1"></i> {{ $plan->bedrooms }} chambres
-                                </span>
-                                <span class="badge bg-light text-dark">
-                                    <i class="bi bi-droplet me-1"></i> {{ $plan->bathrooms }} sdb
-                                </span>
-                                @if($plan->floors > 0)
-                                <span class="badge bg-light text-dark">
-                                    <i class="bi bi-building me-1"></i> {{ $plan->floors+1 }} niveaux
-                                </span>
-                                @endif
+                                <span class="badge bg-light text-dark"><i class="bi bi-rulers me-1"></i> {{ $plan->surface_area }} m²</span>
+                                <span class="badge bg-light text-dark"><i class="bi bi-door-closed me-1"></i> {{ $plan->bedrooms }} ch.</span>
+                                <span class="badge bg-light text-dark"><i class="bi bi-droplet me-1"></i> {{ $plan->bathrooms }} sdb</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold fs-5 text-primary">{{ number_format($plan->price, 0, ',', ' ') }} €</span>
                             </div>
                         </div>
-                        <div class="card-footer bg-white border-top-0 pt-0">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="text-muted small d-block">À partir de</span>
-                                    <span class="fw-bold fs-5 text-primary">{{ number_format($plan->price, 0, ',', ' ') }} €</span>
-                                </div>
-                                <a href="{{ route('house-plans.show', $plan->slug) }}" class="btn btn-outline-primary">
-                                    Découvrir <i class="bi bi-arrow-right ms-2"></i>
-                                </a>
-                            </div>
+                        <div class="card-footer p-3 pt-0 border-top-0 bg-transparent">
+                            <form action="{{ route('cart.add') }}" method="POST">
+                                @csrf
+                                <input type="hidden" name="product_id" value="{{ $plan->id }}">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bi-cart-plus me-2"></i>Ajouter au panier
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>

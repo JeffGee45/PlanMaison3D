@@ -24,7 +24,33 @@
         @include('layouts.includes.header')
 
         <!--Contenu changeant-->
-        @yield('content')
+        <main>
+            <div class="container pt-4">
+                @if(session('success'))
+                    <div class="alert alert-success" role="alert">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div class="alert alert-danger" role="alert">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
+                @if ($errors->any())
+                    <div class="alert alert-danger" role="alert">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+            </div>
+
+            @yield('content')
+        </main>
         <!--Fin Contenu changeant-->
 
         <!-- Footer-->
@@ -37,10 +63,21 @@
         <script>
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({ behavior: 'smooth' });
+                    const href = this.getAttribute('href');
+                    if (href === '#' || href === '#!') {
+                        e.preventDefault();
+                        return;
+                    }
+
+                    try {
+                        const target = document.querySelector(href);
+                        if (target) {
+                            e.preventDefault();
+                            target.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    } catch (error) {
+                        // Gérer les sélecteurs invalides si nécessaire
+                        console.warn('Sélecteur invalide pour le défilement en douceur :', href);
                     }
                 });
             });

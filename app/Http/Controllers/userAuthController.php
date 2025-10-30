@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
-class userAuthController extends Controller
+class UserAuthController extends Controller
 {
     public function register()
     {
@@ -58,7 +58,7 @@ class userAuthController extends Controller
            ]);
 
            try{
-            if(auth()->attempt($request->only('email','password')))
+            if(Auth::attempt($request->only('email','password')))
             {
                 //Rediriger sur la page d'acceuil
                 return redirect('/');
@@ -74,5 +74,44 @@ class userAuthController extends Controller
     public function  handleLogout(){
         Auth::logout();
         return redirect('/');
+    }
+
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('auth.users.profile', compact('user'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:4|confirmed',
+        ]);
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return redirect()->route('user.profile')->with('success', 'Profil mis à jour avec succès.');
+    }
+
+    /**
+     * Afficher les commandes de l'utilisateur
+     */
+    public function orders()
+    {
+        $user = Auth::user();
+        $orders = $user->orders()->with('items')->latest()->get();
+        
+        return view('auth.users.orders', compact('orders'));
     }
 }

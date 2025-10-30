@@ -11,8 +11,7 @@
                     </div>
 
                     <div class="auth-body">
-                        <img src="https://cdn.pixabay.com/photo/2017/07/31/11/31/laptop-2557586_960_720.png"
-                            class="auth-avatar" alt="Avatar">
+                        <img src="{{ asset('img/test.jpg') }}" class="auth-avatar" alt="Espace vendeur">
 
                         @if (Session::get('error'))
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">

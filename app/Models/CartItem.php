@@ -47,9 +47,25 @@ class CartItem extends Model
     /**
      * Get the product that owns the cart item.
      */
-    public function product(): BelongsTo
+    public function product()
     {
-        return $this->belongsTo(Products::class);
+        return $this->belongsTo(Products::class, 'product_id');
+    }
+    
+    /**
+     * Get the house plan associated with the cart item.
+     */
+    public function housePlan()
+    {
+        return $this->belongsTo(\App\Models\HousePlan::class, 'product_id');
+    }
+    
+    /**
+     * Get the parent product model.
+     */
+    public function productable()
+    {
+        return $this->morphTo('productable');
     }
 
     /**

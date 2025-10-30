@@ -16,8 +16,8 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::check() || Auth::user()->role !== 'admin') {
-            return redirect()->route('home')->with('error', 'Accès non autorisé.');
+        if (!Auth::check() || !Auth::user()->isAdmin()) {
+            return redirect()->route('home')->with('error', 'Accès non autorisé. Vous devez être administrateur pour accéder à cette page.');
         }
 
         return $next($request);

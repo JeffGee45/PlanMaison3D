@@ -1,66 +1,86 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# PlanMaison3D - Plateforme de Vente de Plans de Maisons
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 1. Aperçu du Projet
 
-## About Laravel
+**PlanMaison3D** est une application web développée avec Laravel 11 qui permet aux utilisateurs de parcourir, d'acheter et de télécharger des plans de maisons modernes. Elle s'adresse à la fois aux particuliers cherchant l'inspiration pour leur future maison et aux professionnels du bâtiment.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Le projet intègre une interface d'administration complète pour la gestion des contenus et des ventes, ainsi qu'un blog pour partager des conseils et des tendances.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 2. Fonctionnalités Clés
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Pour les Visiteurs et Clients :
+- **Catalogue de Plans** : Navigation et recherche parmi une large gamme de plans de maisons.
+- **Visualisation 360°** : Visionneuse interactive pour explorer les plans en 3D.
+- **Panier d'Achat** : Système de panier simple et efficace.
+- **Blog** : Articles et conseils sur la construction et le design.
+- **Formulaire de Contact** : Pour toute demande d'information.
 
-## Learning Laravel
+### Pour les Administrateurs :
+- **Tableau de Bord** : Vue d'ensemble des statistiques clés (ventes, utilisateurs, articles).
+- **Gestion des Plans** : CRUD complet pour les plans de maisons.
+- **Gestion du Blog** : CRUD pour les articles, catégories et tags.
+- **Gestion des Coupons** : Création et gestion de codes promotionnels.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 3. Structure Technique
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **Framework** : Laravel 11.x
+- **Frontend** : Blade, Bootstrap 5, Tailwind CSS (pour la navigation), Vite.js
+- **Base de Données** : MySQL
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Structure des Dossiers Principaux :
+- `app/Http/Controllers` : Sépare la logique pour l'Admin, l'API, et le site public.
+- `app/Models` : Contient tous les modèles Eloquent avec leurs relations.
+- `resources/views` : Vues Blade, organisées par fonctionnalité (admin, blog, auth, etc.).
+- `routes/web.php` : Regroupe toutes les routes de l'application.
 
-## Laravel Sponsors
+## 4. Installation
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+1.  **Cloner le dépôt** :
+    ```bash
+    git clone https://votre-repository/PlanMaison3D.git
+    cd PlanMaison3D
+    ```
 
-### Premium Partners
+2.  **Installer les dépendances** :
+    ```bash
+    composer install
+    npm install
+    ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+3.  **Configurer l'environnement** :
+    - Copiez `.env.example` en `.env`.
+    - Configurez votre base de données (`DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`).
 
-## Contributing
+4.  **Générer la clé d'application** :
+    ```bash
+    php artisan key:generate
+    ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+5.  **Lancer les migrations et les seeders** :
+    ```bash
+    php artisan migrate:fresh --seed
+    ```
 
-## Code of Conduct
+6.  **Compiler les assets** :
+    ```bash
+    npm run build
+    ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+7.  **Lier le stockage** :
+    ```bash
+    php artisan storage:link
+    ```
 
-## Security Vulnerabilities
+## 5. Utilisation
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- **Accès au site** : `http://localhost:8000`
+- **Accès à l'administration** : `http://localhost:8000/admin`
 
-## License
+Pour créer un utilisateur administrateur, vous pouvez utiliser le seeder ou modifier manuellement le rôle d'un utilisateur dans la base de données (`role = 'admin'`).
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 6. Points Clés du Code
+
+- **Route Model Binding** : Les modèles `Post` et `HousePlan` utilisent le `slug` comme clé de route pour des URLs plus propres.
+- **Middleware d'Administration** : `app/Http/Middleware/AdminMiddleware.php` protège les routes de l'administration.
+- **Services** : Le `CartService` gère la logique du panier d'achat.
+- **Composants Blade** : Le logo et les éléments de navigation sont des composants réutilisables.
